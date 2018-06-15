@@ -2,6 +2,8 @@ const express = require('express')
 const router = express.Router()
 const User = require('../models/UserModel.js')
 const bodyParser = require('body-parser')
+const bcrypt = require('bcrypt')
+const hash = require('../helpers/hash')
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({
@@ -29,24 +31,13 @@ router.post('/login', function(req, res) {
 router.post('/register', function(req, res) {
   let userInfo = req.body;
 
-  console.log('User info: \n', userInfo)
-
-  let newUser = new User({
-    email: userInfo.email,
-    password: userInfo.password
-  })
-
-  newUser.save(function(err, result) {
-    if (err) console.log(err)
-    else
-      console.log(result)
-  })
+  hash(userInfo)
 
   res.json({
-    message: 'you tested POST on regiseter!'
+    message: 'You just registered!'
   })
+
 })
 
 module.exports = router
 
-// Middleware for posting type

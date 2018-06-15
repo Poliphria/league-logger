@@ -28,7 +28,7 @@ class LoginForm extends Component {
       email: this.state.email,
       password: this.state.password
     }
-    let url = 'http://localhost:8080/register'
+    let url = 'http://localhost:8081/register'
     this.postData(url, data)
 
     this.setState({
