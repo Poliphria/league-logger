@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const logger = require('morgan')
 const bodyParser = require('body-parser')
 
-const port = 8081
+const port = 8080
 const indexRouter = require('./routes/userRouter.js')
 const apiRouter = require('./routes/apiRouter.js')
 
