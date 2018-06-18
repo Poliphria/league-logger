@@ -1,9 +1,9 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../models/UserModel.js')
 const bodyParser = require('body-parser')
 const bcrypt = require('bcrypt')
-const hash = require('../helpers/hash')
+const User = require('../models/UserModel')
+const saltRounds = 10
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({
@@ -16,27 +16,56 @@ router.use(function(req, res, next) {
   next()
 })
 
-router.get('/', function(req, res) {
+router.get('/home', function(req, res) {
   res.json({ message: 'Home page'})
 })
 
 router.get('/login', function(req, res) {
-  res.send('This is the login page')
+  res.json({
+    message: 'This is the login page'
+  })
 })
 
 router.post('/login', function(req, res) {
-  res.send('This is the login page')
+  let loginInfo = req.body
+
+  User.findOne({ email: loginInfo.email}, function (err, user) {
+    if (err) return res.status(500).json({ message: 'Internal server error' })
+    bcrypt.compare(loginInfo.password, user.password, function(err, isMatch) {
+      if (err) return res.status(500).json({ message: 'Internal server error' })
+      if (isMatch) res.status(302).redirect('/home')
+      else return res.status(401).json({ message: 'Login info is incorrect'})  
+    })
+  })
+})
+
+router.get('/register', function(req, res) {
+  res.json({
+    message: 'This is the register page'
+  })
 })
 
 router.post('/register', function(req, res) {
-  let userInfo = req.body;
+  let userInfo = req.body
 
-  hash(userInfo)
+  bcrypt.genSalt(saltRounds, function(err, salt) {
+    if (err) {
+      res.status(500).json({ message: 'Internal server error' })
+    }
+    bcrypt.hash(userInfo.password, salt, function(err, hash) {
+      let newUser = new User({
+        email: userInfo.email,
+        password: hash
+      })
 
-  res.json({
-    message: 'You just registered!'
+      newUser.save(function(err) {
+          if (err) return res.status(500).json({ message: err })
+          console.log('User saved')
+      })
+    })
   })
 
+  res.redirect('/summoner')
 })
 
 module.exports = router
