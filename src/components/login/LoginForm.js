@@ -52,7 +52,7 @@ class LoginForm extends Component {
 
   render() {
     return(
-      <div>
+      <div className="container">
         <div className="login-box">
           <form >
             <div className="image-container">

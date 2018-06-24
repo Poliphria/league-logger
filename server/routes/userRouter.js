@@ -65,7 +65,9 @@ router.post('/register', function(req, res) {
     })
   })
 
-  res.redirect('/summoner')
+  res.status(302).json({ 
+    message: 'You registered!'
+  })
 })
 
 module.exports = router
