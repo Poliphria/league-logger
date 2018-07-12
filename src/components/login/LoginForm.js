@@ -56,7 +56,7 @@ class LoginForm extends Component {
         <div className="login-box">
           <form >
             <div className="image-container">
-              <img className="league-logo" src={logo} className="image" alt="site-logo" />
+              <img className="league-logo" src={logo} alt="site-logo" />
             </div>
 
             <div className="form-container">
@@ -66,7 +66,7 @@ class LoginForm extends Component {
               <label>Password</label>
               <input type='password' value={this.state.password} onChange={this.handleChangePass} />
 
-              <button type='submit' onClick={this.handleSubmit}>Login</button>
+              <button className="login-button" type='submit' onClick={this.handleSubmit}>Login</button>
             </div>
 
             <div className="forgot-pass">

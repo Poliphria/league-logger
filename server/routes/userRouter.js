@@ -1,9 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const bodyParser = require('body-parser')
-const bcrypt = require('bcrypt')
-const User = require('../models/UserModel')
-const saltRounds = 10
+const User = require('../models/UserModel.js')
 
 router.use(bodyParser.json())
 router.use(bodyParser.urlencoded({
@@ -28,15 +26,15 @@ router.get('/login', function(req, res) {
 
 router.post('/login', function(req, res) {
   let loginInfo = req.body
-
-  User.findOne({ email: loginInfo.email}, function (err, user) {
-    if (err) return res.status(500).json({ message: 'Internal server error' })
-    bcrypt.compare(loginInfo.password, user.password, function(err, isMatch) {
-      if (err) return res.status(500).json({ message: 'Internal server error' })
-      if (isMatch) res.status(302).redirect('/home')
-      else return res.status(401).json({ message: 'Login info is incorrect'})  
-    })
-  })
+  let found = User.isMatch(loginInfo)
+  
+  console.log(found)
+  
+  if (found) {
+    res.send({ message: 'You just logged in'})
+  } else {
+    res.send({ message: 'Incorrect login'})
+  }
 })
 
 router.get('/register', function(req, res) {
@@ -47,27 +45,25 @@ router.get('/register', function(req, res) {
 
 router.post('/register', function(req, res) {
   let userInfo = req.body
-
-  bcrypt.genSalt(saltRounds, function(err, salt) {
-    if (err) {
-      res.status(500).json({ message: 'Internal server error' })
-    }
-    bcrypt.hash(userInfo.password, salt, function(err, hash) {
-      let newUser = new User({
-        email: userInfo.email,
-        password: hash
-      })
-
-      newUser.save(function(err) {
-          if (err) return res.status(500).json({ message: err })
-          console.log('User saved')
-      })
-    })
-  })
-
-  res.status(302).json({ 
-    message: 'You registered!'
-  })
+  
+  if (userInfo === undefined) {
+    console.log('User info is not defined')
+    res.send({ message: 'user info is not defined'})
+  } else if (!userInfo.email || userInfo.email.length === 0) {
+    console.log('User email is empty')
+    res.send({ message: 'User email is empty'})
+  } else if (!userInfo.password || userInfo.password.length === 0) {
+    console.log('User password is empty')
+    res.send({ message: 'User password is empty'})
+  }
+  
+  else {
+    console.log(userInfo)
+    
+    User.newUser(userInfo)
+    
+    res.send({ message: 'You just registered!'})
+  }
 })
 
 module.exports = router
